@@ -54,13 +54,13 @@ export default function Modal({ title, children, onClose }: ModalProps) {
     >
       <button
         type="button"
-        className="absolute inset-0 bg-black/65 backdrop-blur-xl"
+        className="absolute inset-0 bg-black/80 lg:bg-black/65 lg:backdrop-blur-xl"
         aria-label="Fechar modal"
         onClick={onClose}
       />
       <div
         ref={dialogRef}
-        className="relative max-h-[90vh] w-full max-w-3xl overflow-auto rounded-[2.2rem] border border-white/10 bg-[rgba(13,9,24,0.85)] p-6 shadow-[0_60px_140px_-30px_rgba(0,0,0,0.8)] backdrop-blur-2xl sm:p-9 animate-revealUp"
+        className="relative max-h-[90vh] w-full max-w-3xl overflow-auto rounded-[1.75rem] border border-white/10 bg-[rgba(13,9,24,0.95)] p-6 shadow-[0_60px_140px_-30px_rgba(0,0,0,0.8)] sm:rounded-[2.2rem] sm:p-9 lg:bg-[rgba(13,9,24,0.85)] lg:backdrop-blur-2xl animate-revealUp"
       >
         {/* atmospheric glow */}
         <div

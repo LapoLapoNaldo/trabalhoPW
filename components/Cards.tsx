@@ -71,14 +71,14 @@ export function InfoCard({
 
   const sizeClass =
     size === "tall"
-      ? "min-h-[20rem]"
+      ? "min-h-[16rem] sm:min-h-[20rem]"
       : size === "wide"
-        ? "min-h-[14rem]"
-        : "min-h-[18rem]";
+        ? "min-h-[12rem] sm:min-h-[14rem]"
+        : "min-h-[14rem] sm:min-h-[18rem]";
 
   return (
     <article
-      className={`card-premium card-glow ${sizeClass} flex flex-col justify-between p-7 sm:p-8`}
+      className={`card-premium card-glow ${sizeClass} flex flex-col justify-between p-6 sm:p-8`}
       style={{ "--accent": tone.rgb } as React.CSSProperties}
     >
       <header className="flex items-start justify-between gap-4">
@@ -95,17 +95,17 @@ export function InfoCard({
         ) : null}
       </header>
 
-      <div className="mt-10">
-        <h3 className="font-display text-2xl font-light leading-tight tracking-editorial text-white sm:text-[1.7rem]">
+      <div className="mt-6 sm:mt-10">
+        <h3 className="font-display text-xl font-light leading-tight tracking-editorial text-white sm:text-2xl lg:text-[1.7rem]">
           {title}
         </h3>
-        <p className="mt-4 max-w-[52ch] leading-relaxed text-white/72 text-pretty">
+        <p className="mt-3 max-w-[52ch] leading-relaxed text-white/72 text-pretty sm:mt-4">
           {body}
         </p>
       </div>
 
       {/* Bottom hairline accent */}
-      <div className="mt-8 flex items-center justify-between">
+      <div className="mt-6 flex items-center justify-between sm:mt-8">
         <span
           className={`block h-px w-16 bg-gradient-to-r from-transparent ${tone.text} to-transparent opacity-60`}
         />
@@ -138,19 +138,19 @@ type ResourceCardProps = {
 
 export function ResourceCard({ title, body, href, label }: ResourceCardProps) {
   return (
-    <article className="card-premium flex h-full flex-col justify-between p-7 sm:p-8">
+    <article className="card-premium flex h-full flex-col justify-between p-6 sm:p-8">
       <div>
-        <div className="mb-6 flex items-center gap-3 text-[10px] uppercase tracking-[0.32em] text-white/45">
+        <div className="mb-5 flex items-center gap-3 text-[10px] uppercase tracking-[0.32em] text-white/45 sm:mb-6">
           <span className="h-1.5 w-1.5 rounded-full bg-pride-pink shadow-[0_0_10px_rgba(255,106,174,0.9)] animate-tickerLight" />
           rede de apoio
         </div>
-        <h3 className="font-display text-[1.6rem] font-light leading-tight tracking-editorial text-white">
+        <h3 className="font-display text-[1.4rem] font-light leading-tight tracking-editorial text-white sm:text-[1.6rem]">
           {title}
         </h3>
         <p className="mt-3 leading-relaxed text-white/70 text-pretty">{body}</p>
       </div>
       <a
-        className="focus-ring group/link mt-8 inline-flex w-fit items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-5 py-3 text-sm font-medium text-white transition-all duration-500 ease-cinema hover:-translate-y-0.5 hover:border-pride-yellow/60 hover:bg-pride-yellow hover:text-black"
+        className="focus-ring group/link mt-7 inline-flex w-fit items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-5 py-3 text-sm font-medium text-white transition-all duration-500 ease-cinema hover:-translate-y-0.5 hover:border-pride-yellow/60 hover:bg-pride-yellow hover:text-black sm:mt-8"
         href={href}
         target="_blank"
         rel="noreferrer"

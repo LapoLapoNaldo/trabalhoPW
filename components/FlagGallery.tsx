@@ -32,7 +32,7 @@ function FlagCard({ flag, onOpen, index }: { flag: FlagInfo; onOpen: () => void;
       type="button"
       onClick={onOpen}
       aria-label={`Abrir detalhes da bandeira ${flag.name}`}
-      className="flag-card card-premium group relative flex flex-col gap-6 p-5 text-left sm:p-6"
+      className="flag-card card-premium group relative flex flex-col gap-5 p-5 text-left sm:gap-6 sm:p-6"
     >
       {/* Top meta */}
       <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.32em] text-white/45">

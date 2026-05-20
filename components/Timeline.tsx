@@ -35,7 +35,7 @@ export default function Timeline() {
           <div className="absolute inset-0 bg-gradient-to-b from-pride-yellow via-pride-purple to-pride-cyan opacity-40 blur-md" />
         </div>
 
-        <ol className="relative grid gap-6">
+        <ol className="relative grid gap-4 sm:gap-6">
           {timelineItems.map((item, index) => {
             const tone = accents[index % accents.length];
             return (
@@ -54,19 +54,19 @@ export default function Timeline() {
                   className="absolute left-3.5 top-7 hidden h-5 w-px bg-gradient-to-r from-white/40 to-transparent md:block"
                 />
 
-                <article className="card-premium grid gap-6 p-7 sm:p-8 md:grid-cols-[auto_1fr]">
-                  <div className="flex flex-col items-start gap-3">
-                    <span className="font-display text-[10px] italic text-white/45">
+                <article className="card-premium grid gap-4 p-6 sm:gap-6 sm:p-8 md:grid-cols-[auto_1fr]">
+                  <div className="flex flex-row items-center gap-3 md:flex-col md:items-start">
+                    <span className="font-display text-[10px] italic text-white/45 md:order-1">
                       {String(index + 1).padStart(2, "0")} · marco
                     </span>
                     <span
-                      className={`font-display text-[2.4rem] font-light leading-none tracking-editorial text-white sm:text-[3rem]`}
+                      className={`font-display text-[2rem] font-light leading-none tracking-editorial text-white md:text-[3rem]`}
                     >
                       <span className={tone.text}>{item.year}</span>
                     </span>
                   </div>
                   <div>
-                    <h3 className="font-display text-2xl font-light leading-tight tracking-editorial text-white sm:text-[1.7rem]">
+                    <h3 className="font-display text-xl font-light leading-tight tracking-editorial text-white sm:text-2xl md:text-[1.7rem]">
                       {item.title}
                     </h3>
                     <p className="mt-3 max-w-[58ch] leading-relaxed text-white/72 text-pretty">

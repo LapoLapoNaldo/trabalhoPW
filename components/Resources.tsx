@@ -18,7 +18,7 @@ export default function Resources() {
       description="Links úteis no Brasil. Nem tudo precisa ser carregado sozinhe — existe gente, rede e canal pronto pra escutar."
     >
       {/* Emergency callout */}
-      <article className="relative mb-8 overflow-hidden rounded-[1.75rem] border border-pride-cyan/30 p-7 sm:p-8">
+      <article className="relative mb-6 overflow-hidden rounded-[1.5rem] border border-pride-cyan/30 p-6 sm:mb-8 sm:rounded-[1.75rem] sm:p-8">
         <div
           aria-hidden="true"
           className="absolute inset-0 bg-gradient-to-br from-pride-cyan/12 via-transparent to-pride-purple/10"

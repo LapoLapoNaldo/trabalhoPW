@@ -12,11 +12,14 @@ type MascotProps = {
 
 /**
  * Mascot
- * Friendly companion character with:
- *  - layered halo with conic gradient (depth + brand)
- *  - reactive eyes that gently follow the cursor
- *  - blink, breathe and idle wave (CSS keyframes)
- *  - integrated lighting via radial gradients in SVG
+ * Friendly companion character.
+ *
+ * Performance:
+ *  - Eye-tracking only registers on pointer-fine + non-reduced-motion.
+ *  - Pointer movement is throttled via requestAnimationFrame.
+ *  - The expensive conic halo is hidden on small/touch screens via CSS.
+ *  - Idle animations (floatSubtle, breathe, blink, wave, heartbeat) are
+ *    cheap CSS keyframes; they auto-pause via prefers-reduced-motion.
  */
 export default function Mascot({
   compact = false,
@@ -25,38 +28,55 @@ export default function Mascot({
   reactive = true
 }: MascotProps) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
-  const [eye, setEye] = useState({ x: 0, y: 0 });
+  const eyeRef = useRef<SVGGElement | null>(null);
+  const [trackEyes, setTrackEyes] = useState(false);
 
   useEffect(() => {
     if (!reactive) return;
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (!window.matchMedia("(pointer: fine)").matches) return;
+    setTrackEyes(true);
+  }, [reactive]);
+
+  useEffect(() => {
+    if (!trackEyes) return;
+    const node = wrapRef.current;
+    const eye = eyeRef.current;
+    if (!node || !eye) return;
+
+    let frame = 0;
+    let nextX = 0;
+    let nextY = 0;
 
     const onMove = (event: PointerEvent) => {
-      const node = wrapRef.current;
-      if (!node) return;
       const rect = node.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
       const dx = event.clientX - cx;
       const dy = event.clientY - cy;
       const max = 6;
-      const distance = Math.hypot(dx, dy);
+      const distance = Math.hypot(dx, dy) || 1;
       const factor = Math.min(1, distance / 280);
-      setEye({
-        x: (dx / Math.max(distance, 1)) * max * factor,
-        y: (dy / Math.max(distance, 1)) * max * factor
+      nextX = (dx / distance) * max * factor;
+      nextY = (dy / distance) * max * factor;
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        eye.style.transform = `translate(${nextX}px, ${nextY}px)`;
+        frame = 0;
       });
     };
 
-    window.addEventListener("pointermove", onMove);
-    return () => window.removeEventListener("pointermove", onMove);
-  }, [reactive]);
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [trackEyes]);
 
   const size = compact
-    ? "h-56 w-56 sm:h-64 sm:w-64"
-    : "h-[20rem] w-[20rem] sm:h-[26rem] sm:w-[26rem]";
+    ? "h-48 w-48 sm:h-56 sm:w-56 md:h-64 md:w-64"
+    : "h-[18rem] w-[18rem] sm:h-[22rem] sm:w-[22rem] lg:h-[26rem] lg:w-[26rem]";
 
   const Wrapper = (onClick ? "button" : "div") as React.ElementType;
 
@@ -68,20 +88,16 @@ export default function Mascot({
       aria-label={onClick ? label : undefined}
       className={`focus-ring group relative mx-auto block ${size} animate-floatSubtle rounded-full`}
     >
-      {/* Conic halo */}
+      {/* Conic halo — hidden on touch via .halo-conic media query in globals.css */}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-[-8%] rounded-full opacity-70 blur-2xl animate-breathe"
-        style={{
-          background:
-            "conic-gradient(from 220deg, rgba(255,244,48,0.0), rgba(255,244,48,0.55), rgba(255,255,255,0.4), rgba(156,89,209,0.6), rgba(91,206,250,0.4), rgba(255,106,174,0.55), rgba(255,244,48,0.0))"
-        }}
+        className="halo-conic pointer-events-none absolute inset-[-8%] rounded-full opacity-70 blur-2xl animate-breathe"
       />
 
       {/* Soft inner ring */}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-[12%] rounded-full border border-white/10 bg-white/[0.02] backdrop-blur-sm"
+        className="pointer-events-none absolute inset-[12%] rounded-full border border-white/10 bg-white/[0.02]"
       />
 
       <svg
@@ -109,9 +125,6 @@ export default function Mascot({
             <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.6" />
             <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.0" />
           </linearGradient>
-          <filter id="mascotGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="3" />
-          </filter>
         </defs>
 
         {/* Ambient bubble */}
@@ -121,7 +134,6 @@ export default function Mascot({
         {/* Antenna */}
         <path d="M170 67v-31" stroke="#FFF430" strokeWidth="9" strokeLinecap="round" />
         <circle cx="170" cy="26" r="11" fill="#FFF430" />
-        <circle cx="170" cy="26" r="18" fill="#FFF430" opacity="0.25" filter="url(#mascotGlow)" />
 
         {/* Arms */}
         <path
@@ -156,16 +168,13 @@ export default function Mascot({
           stroke="rgba(255,255,255,0.10)"
         />
 
-        {/* Eyes — translated by pointer offset */}
+        {/* Eyes */}
         <g
-          style={{
-            transform: `translate(${eye.x}px, ${eye.y}px)`,
-            transition: "transform 380ms cubic-bezier(0.22, 1, 0.36, 1)"
-          }}
+          ref={eyeRef}
+          style={{ transition: "transform 380ms cubic-bezier(0.22, 1, 0.36, 1)" }}
         >
           <ellipse className="origin-center animate-blink" cx="141" cy="155" rx="13" ry="18" fill="#FFF430" />
           <ellipse className="origin-center animate-blink" cx="199" cy="155" rx="13" ry="18" fill="#5BCEFA" />
-          {/* eye highlights */}
           <circle cx="146" cy="148" r="3" fill="#FFFFFF" opacity="0.85" />
           <circle cx="204" cy="148" r="3" fill="#FFFFFF" opacity="0.85" />
         </g>
@@ -192,8 +201,6 @@ export default function Mascot({
         {/* Cheek lights */}
         <circle cx="110" cy="117" r="11" fill="#FF6AAE" opacity="0.85" />
         <circle cx="230" cy="117" r="11" fill="#35E7D2" opacity="0.85" />
-        <circle cx="110" cy="117" r="20" fill="#FF6AAE" opacity="0.18" filter="url(#mascotGlow)" />
-        <circle cx="230" cy="117" r="20" fill="#35E7D2" opacity="0.18" filter="url(#mascotGlow)" />
 
         {/* Heart pulse */}
         <g transform="translate(170 282)">
@@ -205,18 +212,14 @@ export default function Mascot({
         </g>
       </svg>
 
-      {/* Floating sparks */}
+      {/* Sparks — hidden on small screens to reduce paint */}
       <span
         aria-hidden="true"
-        className="absolute left-6 top-16 h-2.5 w-2.5 rounded-full bg-pride-yellow shadow-[0_0_18px_rgba(255,244,48,0.9)] transition-transform duration-700 ease-cinema group-hover:scale-150"
+        className="absolute left-6 top-16 hidden h-2.5 w-2.5 rounded-full bg-pride-yellow shadow-[0_0_18px_rgba(255,244,48,0.9)] sm:block"
       />
       <span
         aria-hidden="true"
-        className="absolute bottom-12 right-8 h-2 w-2 rounded-full bg-pride-cyan shadow-[0_0_16px_rgba(53,231,210,0.9)] transition-transform duration-700 ease-cinema group-hover:scale-150"
-      />
-      <span
-        aria-hidden="true"
-        className="absolute right-12 top-12 h-1.5 w-1.5 rounded-full bg-pride-pink shadow-[0_0_14px_rgba(255,106,174,0.9)]"
+        className="absolute bottom-12 right-8 hidden h-2 w-2 rounded-full bg-pride-cyan shadow-[0_0_16px_rgba(53,231,210,0.9)] sm:block"
       />
     </Wrapper>
   );

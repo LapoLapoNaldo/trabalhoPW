@@ -11,7 +11,7 @@ type SectionContainerProps = {
   index?: string;
   /** Hint phrase shown next to title in italic small caps */
   hint?: string;
-  /** Renders without internal spacing wrapper */
+  /** Renders without internal stagger wrapper */
   bare?: boolean;
 };
 
@@ -29,20 +29,18 @@ export default function SectionContainer({
   return (
     <section
       id={id}
-      className={`relative scroll-mt-28 px-5 py-24 sm:px-8 lg:py-32 ${className}`}
+      className={`relative scroll-mt-24 px-5 py-16 sm:px-8 sm:py-20 lg:py-28 ${className}`}
     >
       <AnimatedSection className="relative mx-auto max-w-7xl">
-        {/* Editorial header */}
-        <div className="mb-14 grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+        {/* Editorial header — lean on mobile, full editorial layout on desktop */}
+        <div className="mb-10 grid gap-4 sm:mb-12 lg:mb-14 lg:grid-cols-[0.8fr_1.2fr] lg:items-end lg:gap-8">
           <div className="stagger-child" style={{ "--stagger": 0 } as React.CSSProperties}>
             {index ? (
-              <p className="mb-4 font-display text-sm italic text-white/40">
+              <p className="mb-2 font-display text-xs italic text-white/40 sm:mb-3 sm:text-sm">
                 Capítulo {index}
               </p>
             ) : null}
-            {eyebrow ? (
-              <p className="kicker">{eyebrow}</p>
-            ) : null}
+            {eyebrow ? <p className="kicker">{eyebrow}</p> : null}
           </div>
 
           <div className="stagger-child" style={{ "--stagger": 1 } as React.CSSProperties}>
@@ -50,24 +48,27 @@ export default function SectionContainer({
               {title}
             </h2>
             {hint ? (
-              <p className="mt-3 font-display text-base italic text-white/55">
+              <p className="mt-2 font-display text-sm italic text-white/55 sm:mt-3 sm:text-base">
                 {hint}
               </p>
             ) : null}
             {description ? (
-              <p className="mt-5 max-w-[58ch] text-fluid-base leading-editorial text-white/70 text-pretty">
+              <p className="mt-4 max-w-[58ch] text-fluid-base leading-editorial text-white/70 text-pretty sm:mt-5">
                 {description}
               </p>
             ) : null}
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="mb-14 hidden lg:block">
+        {/* Divider — desktop only */}
+        <div className="mb-12 hidden lg:mb-14 lg:block">
           <div className="divider-pride" />
         </div>
 
-        <div className={bare ? "" : "stagger-child"} style={{ "--stagger": 2 } as React.CSSProperties}>
+        <div
+          className={bare ? "" : "stagger-child"}
+          style={{ "--stagger": 2 } as React.CSSProperties}
+        >
           {children}
         </div>
       </AnimatedSection>

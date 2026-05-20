@@ -41,18 +41,18 @@ export default function AffirmationCarousel() {
         onMouseLeave={() => setPaused(false)}
         onFocus={() => setPaused(true)}
         onBlur={() => setPaused(false)}
-        className="relative isolate overflow-hidden rounded-[2.5rem] border border-white/10 bg-[rgba(15,10,28,0.55)] p-7 backdrop-blur-2xl sm:p-12 lg:p-16"
+        className="relative isolate overflow-hidden rounded-[1.75rem] border border-white/10 bg-[rgba(15,10,28,0.62)] p-6 sm:rounded-[2.5rem] sm:p-12 lg:p-16"
         aria-roledescription="carrossel"
         aria-label="Frases acolhedoras"
       >
-        {/* Atmospheric glows that drift subtly */}
+        {/* Atmospheric glows — static on mobile, gently animated on desktop */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -right-32 -top-32 h-[28rem] w-[28rem] rounded-full bg-pride-pink/20 blur-3xl animate-pulseGlow"
+          className="pointer-events-none absolute -right-32 -top-32 hidden h-[28rem] w-[28rem] rounded-full bg-pride-pink/20 blur-3xl sm:block lg:animate-pulseGlow"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -bottom-32 -left-24 h-[26rem] w-[26rem] rounded-full bg-pride-purple/30 blur-3xl animate-pulseGlow [animation-delay:-2s]"
+          className="pointer-events-none absolute -bottom-32 -left-24 hidden h-[26rem] w-[26rem] rounded-full bg-pride-purple/30 blur-3xl sm:block lg:animate-pulseGlow lg:[animation-delay:-2s]"
         />
 
         {/* Quote mark */}
@@ -64,17 +64,17 @@ export default function AffirmationCarousel() {
         </div>
 
         {/* Floating phrase stack — each phrase is rendered then crossfaded */}
-        <div className="relative min-h-[260px] sm:min-h-[300px] lg:min-h-[360px]">
+        <div className="relative min-h-[200px] sm:min-h-[280px] lg:min-h-[340px]">
           {affirmations.map((phrase, index) => {
             const isActive = index === active;
             return (
               <p
                 key={phrase}
                 aria-hidden={!isActive}
-                className={`absolute inset-0 flex items-center text-balance font-display font-light leading-display tracking-editorial text-white transition-all duration-1000 ease-cinema text-fluid-2xl sm:text-fluid-3xl lg:text-fluid-4xl ${
+                className={`absolute inset-0 flex items-center text-balance font-display font-light leading-display tracking-editorial text-white transition-opacity duration-700 ease-cinema text-fluid-2xl sm:text-fluid-3xl lg:text-fluid-4xl ${
                   isActive
-                    ? "opacity-100 translate-y-0 blur-0"
-                    : "opacity-0 translate-y-6 blur-md pointer-events-none"
+                    ? "opacity-100"
+                    : "opacity-0 pointer-events-none"
                 }`}
               >
                 <span>

@@ -9,10 +9,19 @@ export default function Navbar() {
   const [active, setActive] = useState<string>("#inicio");
 
   useEffect(() => {
-    const update = () => setScrolled(window.scrollY > 24);
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      setScrolled(window.scrollY > 24);
+    };
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(update);
+    };
     update();
-    window.addEventListener("scroll", update, { passive: true });
-    return () => window.removeEventListener("scroll", update);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
@@ -40,10 +49,10 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition duration-500 ease-cinema ${
+      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-500 ease-cinema ${
         scrolled
-          ? "bg-black/55 shadow-[0_24px_80px_-32px_rgba(0,0,0,0.7)] backdrop-blur-2xl"
-          : "bg-transparent backdrop-blur-md"
+          ? "bg-black/80 shadow-[0_24px_80px_-32px_rgba(0,0,0,0.7)] lg:bg-black/55 lg:backdrop-blur-2xl"
+          : "bg-transparent lg:backdrop-blur-md"
       }`}
     >
       {/* Hairline */}
@@ -148,7 +157,7 @@ export default function Navbar() {
 
       {/* Mobile drawer */}
       <div
-        className={`overflow-hidden border-t border-white/10 bg-black/85 backdrop-blur-2xl lg:hidden ${
+        className={`overflow-hidden border-t border-white/10 bg-black/95 lg:hidden ${
           open ? "max-h-[420px]" : "max-h-0"
         } transition-[max-height] duration-500 ease-cinema`}
       >

@@ -2,7 +2,7 @@ import AnimatedSection from "@/components/AnimatedSection";
 
 export default function Footer() {
   return (
-    <footer className="relative isolate overflow-hidden border-t border-white/10 px-5 pb-12 pt-24 sm:px-8 lg:pt-32">
+    <footer className="relative isolate overflow-hidden border-t border-white/10 px-5 pb-10 pt-16 sm:px-8 sm:pt-20 lg:pt-32">
       {/* Aurora glow */}
       <div
         aria-hidden="true"
@@ -21,7 +21,7 @@ export default function Footer() {
         {/* Closing emotional message */}
         <div className="text-center">
           <p className="kicker justify-center">um abraço de despedida</p>
-          <p className="mx-auto mt-8 max-w-[24ch] text-balance font-display font-light leading-display tracking-editorial text-white text-fluid-3xl sm:text-fluid-4xl">
+          <p className="mx-auto mt-6 max-w-[24ch] text-balance font-display font-light leading-display tracking-editorial text-white text-fluid-2xl sm:mt-8 sm:text-fluid-3xl lg:text-fluid-4xl">
             Que essa página seja{" "}
             <em className="italic-display text-gradient-pride">um abraço</em>{" "}
             que te encontra sempre que precisar.
@@ -29,7 +29,7 @@ export default function Footer() {
         </div>
 
         {/* Pride flag stripes */}
-        <div className="mx-auto mt-14 max-w-3xl overflow-hidden rounded-full border border-white/10 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.7)]">
+        <div className="mx-auto mt-10 max-w-3xl overflow-hidden rounded-full border border-white/10 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.7)] sm:mt-14">
           <div className="flex h-3">
             {[
               "#FFF430",
@@ -51,7 +51,7 @@ export default function Footer() {
         </div>
 
         {/* Meta strip */}
-        <div className="mt-16 grid items-center gap-8 border-t border-white/10 pt-10 text-sm text-white/55 lg:grid-cols-3">
+        <div className="mt-12 grid items-center gap-6 border-t border-white/10 pt-8 text-sm text-white/55 sm:mt-16 sm:gap-8 sm:pt-10 lg:grid-cols-3">
           <div>
             <p className="font-display text-base text-white">
               Orgulho{" "}

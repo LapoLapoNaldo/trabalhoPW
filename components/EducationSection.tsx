@@ -59,7 +59,7 @@ export default function EducationSection() {
 
       {/* Cotidiano + Mitos */}
       <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_1.1fr]">
-        <article className="glass-panel relative overflow-hidden rounded-[2rem] p-7 sm:p-9">
+        <article className="glass-panel relative overflow-hidden rounded-[2rem] p-6 sm:p-9">
           <div className="kicker mb-6">Como falar bonito</div>
           <h3 className="font-display text-3xl font-light leading-tight tracking-editorial text-white sm:text-4xl">
             Pequenas frases,{" "}
@@ -87,10 +87,10 @@ export default function EducationSection() {
         </article>
 
         <article
-          className="relative overflow-hidden rounded-[2rem] border border-pride-yellow/25 p-7 sm:p-9"
+          className="relative overflow-hidden rounded-[2rem] border border-pride-yellow/25 p-6 sm:p-9"
           style={{
             background:
-              "linear-gradient(160deg, rgba(255,244,48,0.08), rgba(255,244,48,0.02) 60%), rgba(20,14,8,0.5)"
+              "linear-gradient(160deg, rgba(255,244,48,0.08), rgba(255,244,48,0.02) 60%), rgba(20,14,8,0.6)"
           }}
         >
           <div
