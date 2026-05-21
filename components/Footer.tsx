@@ -2,19 +2,11 @@ import AnimatedSection from "@/components/AnimatedSection";
 
 export default function Footer() {
   return (
-    <footer className="relative isolate overflow-hidden border-t border-white/10 px-5 pb-10 pt-16 sm:px-8 sm:pt-20 lg:pt-32">
-      {/* Aurora glow */}
+    <footer className="cv-auto relative isolate overflow-hidden border-t border-white/10 px-5 pb-10 pt-16 sm:px-8 sm:pt-20 lg:pt-32">
+      {/* Aurora glow — single layer, desktop only */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 -top-40 mx-auto h-[36rem] max-w-7xl rounded-[50%] bg-pride-purple/30 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -left-32 top-32 h-72 w-72 rounded-full bg-pride-yellow/10 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-32 top-32 h-72 w-72 rounded-full bg-pride-cyan/10 blur-3xl"
+        className="pointer-events-none absolute inset-x-0 -top-40 mx-auto hidden h-[36rem] max-w-7xl rounded-[50%] bg-pride-purple/25 blur-3xl lg:block"
       />
 
       <AnimatedSection className="relative mx-auto max-w-7xl">

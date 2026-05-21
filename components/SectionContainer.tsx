@@ -29,7 +29,7 @@ export default function SectionContainer({
   return (
     <section
       id={id}
-      className={`relative scroll-mt-24 px-5 py-16 sm:px-8 sm:py-20 lg:py-28 ${className}`}
+      className={`cv-auto relative scroll-mt-24 px-5 py-16 sm:px-8 sm:py-20 lg:py-28 ${className}`}
     >
       <AnimatedSection className="relative mx-auto max-w-7xl">
         {/* Editorial header — lean on mobile, full editorial layout on desktop */}

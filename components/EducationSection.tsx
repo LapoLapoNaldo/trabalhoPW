@@ -95,7 +95,7 @@ export default function EducationSection() {
         >
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-pride-yellow/15 blur-3xl"
+            className="pointer-events-none absolute -right-24 -top-24 hidden h-72 w-72 rounded-full bg-pride-yellow/15 blur-3xl lg:block"
           />
           <div className="kicker mb-6 text-pride-yellow/80">
             Mitos x Realidade

@@ -1,20 +1,44 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { affirmations } from "@/components/data";
 import SectionContainer from "@/components/SectionContainer";
 
+/**
+ * AffirmationCarousel — single-element rotator.
+ *
+ * Performance:
+ *  - Renders only ONE phrase at a time (was rendering all six and crossfading,
+ *    which forced the browser to layout/paint everything).
+ *  - Cross-fade is a cheap CSS transition on opacity only.
+ *  - Auto-rotation paused via document.visibilityState + IntersectionObserver
+ *    (so the timer doesn't run when the section is off-screen or in another tab).
+ *  - The two big blurred ambient blobs are now static (no pulseGlow loop).
+ */
 export default function AffirmationCarousel() {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
-  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (paused) return;
-    const timer = window.setInterval(() => {
+    if (typeof document === "undefined") return;
+    if (document.visibilityState === "hidden") return;
+
+    const id = window.setInterval(() => {
       setActive((current) => (current + 1) % affirmations.length);
-    }, 6000);
-    return () => window.clearInterval(timer);
+    }, 7000);
+
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        window.clearInterval(id);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, [paused]);
 
   const previous = () =>
@@ -36,59 +60,48 @@ export default function AffirmationCarousel() {
       hint="Mensagens curtas para quando o mundo parece barulhento demais."
     >
       <div
-        ref={containerRef}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
         onFocus={() => setPaused(true)}
         onBlur={() => setPaused(false)}
-        className="relative isolate overflow-hidden rounded-[1.75rem] border border-white/10 bg-[rgba(15,10,28,0.62)] p-6 sm:rounded-[2.5rem] sm:p-12 lg:p-16"
+        className="relative isolate overflow-hidden rounded-[1.5rem] border border-white/10 bg-[rgba(15,10,28,0.78)] p-6 sm:rounded-[2.5rem] sm:p-12 lg:p-16"
         aria-roledescription="carrossel"
         aria-label="Frases acolhedoras"
       >
-        {/* Atmospheric glows — static on mobile, gently animated on desktop */}
+        {/* Static ambient blobs — desktop only */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -right-32 -top-32 hidden h-[28rem] w-[28rem] rounded-full bg-pride-pink/20 blur-3xl sm:block lg:animate-pulseGlow"
+          className="pointer-events-none absolute -right-24 -top-24 hidden h-72 w-72 rounded-full bg-pride-pink/15 blur-3xl lg:block"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -bottom-32 -left-24 hidden h-[26rem] w-[26rem] rounded-full bg-pride-purple/30 blur-3xl sm:block lg:animate-pulseGlow lg:[animation-delay:-2s]"
+          className="pointer-events-none absolute -bottom-24 -left-20 hidden h-72 w-72 rounded-full bg-pride-purple/25 blur-3xl lg:block"
         />
 
-        {/* Quote mark */}
+        {/* Big quote glyph */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute left-6 top-2 font-display text-[10rem] leading-none text-white/[0.06] sm:left-10 sm:top-4 sm:text-[14rem]"
+          className="pointer-events-none absolute left-6 top-2 font-display text-[8rem] leading-none text-white/[0.05] sm:left-10 sm:top-4 sm:text-[12rem]"
         >
           &ldquo;
         </div>
 
-        {/* Floating phrase stack — each phrase is rendered then crossfaded */}
-        <div className="relative min-h-[200px] sm:min-h-[280px] lg:min-h-[340px]">
-          {affirmations.map((phrase, index) => {
-            const isActive = index === active;
-            return (
-              <p
-                key={phrase}
-                aria-hidden={!isActive}
-                className={`absolute inset-0 flex items-center text-balance font-display font-light leading-display tracking-editorial text-white transition-opacity duration-700 ease-cinema text-fluid-2xl sm:text-fluid-3xl lg:text-fluid-4xl ${
-                  isActive
-                    ? "opacity-100"
-                    : "opacity-0 pointer-events-none"
-                }`}
-              >
-                <span>
-                  <em className="italic-display text-pride-yellow/90">&ldquo;</em>
-                  {phrase}
-                  <em className="italic-display text-pride-yellow/90">&rdquo;</em>
-                </span>
-              </p>
-            );
-          })}
+        {/* Single phrase, key-rotated for crossfade-in */}
+        <div className="relative min-h-[180px] sm:min-h-[260px] lg:min-h-[320px]">
+          <p
+            key={active}
+            className="absolute inset-0 flex items-center text-balance font-display font-light leading-display tracking-editorial text-white text-fluid-2xl animate-revealUp sm:text-fluid-3xl lg:text-fluid-4xl"
+          >
+            <span>
+              <em className="italic-display text-pride-yellow/90">&ldquo;</em>
+              {affirmations[active]}
+              <em className="italic-display text-pride-yellow/90">&rdquo;</em>
+            </span>
+          </p>
         </div>
 
         {/* Controls */}
-        <div className="relative mt-10 flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+        <div className="relative mt-8 flex flex-col items-start justify-between gap-5 sm:mt-10 sm:flex-row sm:items-center">
           <div className="flex items-center gap-3" role="tablist" aria-label="Selecionar frase">
             <span className="font-display text-xs italic text-white/45">
               {String(active + 1).padStart(2, "0")} / {String(affirmations.length).padStart(2, "0")}
@@ -102,7 +115,7 @@ export default function AffirmationCarousel() {
                   aria-selected={active === index}
                   aria-label={`Mostrar frase ${index + 1}`}
                   onClick={() => setActive(index)}
-                  className={`focus-ring h-1 rounded-full transition-all duration-500 ease-cinema ${
+                  className={`focus-ring h-1 rounded-full transition-all duration-300 ease-cinema ${
                     active === index
                       ? "w-10 bg-pride-yellow"
                       : "w-4 bg-white/25 hover:bg-white/55"
@@ -116,7 +129,7 @@ export default function AffirmationCarousel() {
             <button
               type="button"
               onClick={previous}
-              className="focus-ring grid h-12 w-12 place-items-center rounded-full border border-white/15 bg-white/[0.04] text-white transition-all duration-500 ease-cinema hover:-translate-x-0.5 hover:border-white/30 hover:bg-white/[0.08]"
+              className="focus-ring grid h-12 w-12 place-items-center rounded-full border border-white/15 bg-white/[0.04] text-white transition-colors duration-300 ease-cinema hover:border-white/30 hover:bg-white/[0.08]"
               aria-label="Frase anterior"
             >
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -132,7 +145,7 @@ export default function AffirmationCarousel() {
             <button
               type="button"
               onClick={next}
-              className="focus-ring grid h-12 w-12 place-items-center rounded-full bg-pride-yellow text-black transition-all duration-500 ease-cinema hover:translate-x-0.5 hover:bg-white"
+              className="focus-ring grid h-12 w-12 place-items-center rounded-full bg-pride-yellow text-black transition-colors duration-300 ease-cinema hover:bg-white"
               aria-label="Próxima frase"
             >
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -147,9 +160,6 @@ export default function AffirmationCarousel() {
             </button>
           </div>
         </div>
-
-        {/* Hairline base */}
-        <div className="divider-pride absolute inset-x-12 bottom-0 hidden lg:block" />
       </div>
     </SectionContainer>
   );

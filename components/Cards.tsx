@@ -141,7 +141,7 @@ export function ResourceCard({ title, body, href, label }: ResourceCardProps) {
     <article className="card-premium flex h-full flex-col justify-between p-6 sm:p-8">
       <div>
         <div className="mb-5 flex items-center gap-3 text-[10px] uppercase tracking-[0.32em] text-white/45 sm:mb-6">
-          <span className="h-1.5 w-1.5 rounded-full bg-pride-pink shadow-[0_0_10px_rgba(255,106,174,0.9)] animate-tickerLight" />
+          <span className="h-1.5 w-1.5 rounded-full bg-pride-pink" />
           rede de apoio
         </div>
         <h3 className="font-display text-[1.4rem] font-light leading-tight tracking-editorial text-white sm:text-[1.6rem]">

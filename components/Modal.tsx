@@ -65,11 +65,11 @@ export default function Modal({ title, children, onClose }: ModalProps) {
         {/* atmospheric glow */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-pride-purple/30 blur-3xl"
+          className="pointer-events-none absolute -right-24 -top-24 hidden h-72 w-72 rounded-full bg-pride-purple/25 blur-3xl lg:block"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -left-20 bottom-0 h-64 w-64 rounded-full bg-pride-yellow/15 blur-3xl"
+          className="pointer-events-none absolute -left-20 bottom-0 hidden h-64 w-64 rounded-full bg-pride-yellow/12 blur-3xl lg:block"
         />
 
         <div className="relative mb-8 flex items-start justify-between gap-5">

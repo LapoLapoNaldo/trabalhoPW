@@ -25,11 +25,11 @@ export default function Resources() {
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -right-20 -top-16 h-48 w-48 rounded-full bg-pride-cyan/20 blur-3xl"
+          className="pointer-events-none absolute -right-20 -top-16 hidden h-48 w-48 rounded-full bg-pride-cyan/20 blur-3xl lg:block"
         />
         <div className="relative flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
           <span className="inline-flex items-center gap-2 rounded-full border border-pride-cyan/40 bg-pride-cyan/10 px-3 py-1.5 text-[10px] uppercase tracking-[0.32em] text-pride-cyan">
-            <span className="h-1.5 w-1.5 rounded-full bg-pride-cyan animate-tickerLight" />
+            <span className="h-1.5 w-1.5 rounded-full bg-pride-cyan" />
             Sinal de cuidado
           </span>
           <p className="max-w-[68ch] leading-relaxed text-white/82 text-pretty">

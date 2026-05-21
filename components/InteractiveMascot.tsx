@@ -34,11 +34,11 @@ export default function InteractiveMascot() {
           <div className="relative mx-auto aspect-square w-full max-w-[20rem] sm:max-w-[24rem] lg:max-w-[28rem]">
             <div
               aria-hidden="true"
-              className="absolute inset-[8%] rounded-full bg-nonbinary-conic opacity-25 blur-3xl"
+              className="absolute inset-[8%] hidden rounded-full bg-nonbinary-conic opacity-20 blur-3xl lg:block"
             />
             <div
               aria-hidden="true"
-              className="absolute inset-[18%] rounded-full bg-pride-purple/30 blur-3xl"
+              className="absolute inset-[18%] rounded-full bg-pride-purple/25 blur-3xl"
             />
             <div className="absolute inset-0 grid place-items-center">
               <Mascot compact onClick={react} label="Receber mensagem do mascote" />
@@ -58,11 +58,11 @@ export default function InteractiveMascot() {
           <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-[rgba(15,10,28,0.7)] p-6 sm:rounded-[2.4rem] sm:p-8 lg:p-10">
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute -left-24 -top-20 h-64 w-64 rounded-full bg-pride-yellow/10 blur-3xl"
+              className="pointer-events-none absolute -left-24 -top-20 hidden h-64 w-64 rounded-full bg-pride-yellow/10 blur-3xl lg:block"
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute -right-20 -bottom-20 h-72 w-72 rounded-full bg-pride-purple/30 blur-3xl"
+              className="pointer-events-none absolute -right-20 -bottom-20 hidden h-72 w-72 rounded-full bg-pride-purple/30 blur-3xl lg:block"
             />
 
             <span

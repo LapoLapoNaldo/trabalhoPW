@@ -3,55 +3,63 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * RainbowCursor
- * Smooth spring-following custom cursor with conic glow.
- * - hidden on coarse pointers
- * - hidden when prefers-reduced-motion (uses native cursor)
+ * RainbowCursor — minimal custom cursor.
+ *
+ * Performance:
+ *  - No mix-blend-mode (was forcing full-viewport composites).
+ *  - No conic gradient + blur stack (very expensive paint).
+ *  - Single small element, transformed via rAF lerp.
+ *  - Native cursor stays — we render the dot as an additional layer instead
+ *    of forcing `cursor: none` on the entire page.
+ *  - Disabled on touch / coarse pointers / reduced-motion / small screens.
  */
 export default function RainbowCursor() {
   const [enabled, setEnabled] = useState(false);
-  const [active, setActive] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
-  // target / current positions for lerp
   const target = useRef({ x: -100, y: -100 });
   const current = useRef({ x: -100, y: -100 });
-  const visible = useRef(false);
   const frame = useRef<number | null>(null);
+  const activeRef = useRef(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (!window.matchMedia("(pointer: fine)").matches) return;
+    if (window.matchMedia("(max-width: 1023px)").matches) return;
 
     setEnabled(true);
 
     const onMove = (event: PointerEvent) => {
       target.current.x = event.clientX;
       target.current.y = event.clientY;
-      visible.current = true;
       if (ref.current) ref.current.style.opacity = "1";
     };
-    const onDown = () => setActive(true);
-    const onUp = () => setActive(false);
+    const onDown = () => {
+      activeRef.current = true;
+      ref.current?.classList.add("is-active");
+    };
+    const onUp = () => {
+      activeRef.current = false;
+      ref.current?.classList.remove("is-active");
+    };
     const onLeave = () => {
-      visible.current = false;
       if (ref.current) ref.current.style.opacity = "0";
     };
 
     const tick = () => {
-      const { x, y } = target.current;
-      current.current.x += (x - current.current.x) * 0.18;
-      current.current.y += (y - current.current.y) * 0.18;
+      const t = target.current;
+      const c = current.current;
+      c.x += (t.x - c.x) * 0.22;
+      c.y += (t.y - c.y) * 0.22;
       if (ref.current) {
-        ref.current.style.left = `${current.current.x}px`;
-        ref.current.style.top = `${current.current.y}px`;
+        ref.current.style.transform = `translate3d(${c.x}px, ${c.y}px, 0) translate(-50%, -50%)`;
       }
       frame.current = window.requestAnimationFrame(tick);
     };
     frame.current = window.requestAnimationFrame(tick);
 
-    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerdown", onDown);
     window.addEventListener("pointerup", onUp);
     document.documentElement.addEventListener("mouseleave", onLeave);
@@ -71,8 +79,8 @@ export default function RainbowCursor() {
     <div
       ref={ref}
       aria-hidden="true"
-      className={`rainbow-cursor ${active ? "is-active" : ""}`}
-      style={{ opacity: 0 }}
+      className="rainbow-cursor"
+      style={{ opacity: 0, left: 0, top: 0 }}
     />
   );
 }
