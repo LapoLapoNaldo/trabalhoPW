@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 type ModalProps = {
   title: string;
@@ -11,6 +12,14 @@ type ModalProps = {
 export default function Modal({ title, children, onClose }: ModalProps) {
   const closeRef = useRef<HTMLButtonElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
+
+  // Portal target only exists on the client.
+  // Without this gate, Next.js (App Router / SSR) would attempt to
+  // call createPortal during server rendering and throw.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const previousActive = document.activeElement as HTMLElement | null;
@@ -36,16 +45,28 @@ export default function Modal({ title, children, onClose }: ModalProps) {
       }
     };
 
+    // Lock body scroll while the modal is open.
+    // We cache the previous value instead of clearing to "" so we don't
+    // stomp on any other code that may have set it.
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKeyDown);
+
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
       previousActive?.focus();
     };
   }, [onClose]);
 
-  return (
+  if (!mounted) return null;
+
+  // The modal is rendered as a direct child of <body> via createPortal.
+  // This is the canonical fix for the "fixed-positioned element gets
+  // captured by an ancestor's transform / filter / contain" CSS gotcha:
+  // outside the section-reveal / stagger-child subtree, `position: fixed`
+  // resolves against the viewport (as intended) on every device.
+  const overlay = (
     <div
       className="fixed inset-0 z-[70] grid place-items-center px-4 py-8"
       role="dialog"
@@ -97,4 +118,6 @@ export default function Modal({ title, children, onClose }: ModalProps) {
       </div>
     </div>
   );
+
+  return createPortal(overlay, document.body);
 }

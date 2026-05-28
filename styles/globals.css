@@ -220,7 +220,11 @@ a {
 
 .section-reveal.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  /* IMPORTANT: use `none` (not translateY(0)).
+     Any non-`none` transform on an ancestor turns it into the containing
+     block of every descendant `position: fixed`, which would silently
+     break modals/portals/popovers rendered inside a revealed section. */
+  transform: none;
 }
 
 .stagger-child {
@@ -234,7 +238,8 @@ a {
 
 .section-reveal.is-visible .stagger-child {
   opacity: 1;
-  transform: translateY(0);
+  /* See note above on .section-reveal.is-visible — same rationale. */
+  transform: none;
 }
 
 .word-reveal {
