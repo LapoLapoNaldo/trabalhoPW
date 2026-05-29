@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { affirmations } from "@/components/data";
 import SectionContainer from "@/components/SectionContainer";
 
@@ -16,35 +16,78 @@ import SectionContainer from "@/components/SectionContainer";
  *  - The two big blurred ambient blobs are now static (no pulseGlow loop).
  */
 export default function AffirmationCarousel() {
+  const carouselRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [isInView, setIsInView] = useState(true);
+  const [isDocumentVisible, setIsDocumentVisible] = useState(true);
+  const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
-    if (paused) return;
+    if (typeof window === "undefined") return;
+
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const syncMotionPreference = () => setReduceMotion(query.matches);
+
+    syncMotionPreference();
+    query.addEventListener("change", syncMotionPreference);
+
+    return () => {
+      query.removeEventListener("change", syncMotionPreference);
+    };
+  }, []);
+
+  useEffect(() => {
     if (typeof document === "undefined") return;
-    if (document.visibilityState === "hidden") return;
+
+    const syncVisibility = () => {
+      setIsDocumentVisible(document.visibilityState === "visible");
+    };
+
+    syncVisibility();
+    document.addEventListener("visibilitychange", syncVisibility);
+    return () => document.removeEventListener("visibilitychange", syncVisibility);
+  }, []);
+
+  useEffect(() => {
+    const element = carouselRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry.isIntersecting),
+      { rootMargin: "160px 0px", threshold: 0.1 }
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (paused || !isInView || !isDocumentVisible || reduceMotion) return;
 
     const id = window.setInterval(() => {
       setActive((current) => (current + 1) % affirmations.length);
     }, 7000);
 
-    const onVisibility = () => {
-      if (document.visibilityState === "hidden") {
-        window.clearInterval(id);
-      }
-    };
-    document.addEventListener("visibilitychange", onVisibility);
+    return () => window.clearInterval(id);
+  }, [isDocumentVisible, isInView, paused, reduceMotion]);
 
-    return () => {
-      window.clearInterval(id);
-      document.removeEventListener("visibilitychange", onVisibility);
-    };
-  }, [paused]);
-
-  const previous = () =>
+  const previous = useCallback(() => {
     setActive((current) => (current - 1 + affirmations.length) % affirmations.length);
-  const next = () =>
+  }, []);
+
+  const next = useCallback(() => {
     setActive((current) => (current + 1) % affirmations.length);
+  }, []);
+
+  const pauseRotation = useCallback(() => setPaused(true), []);
+  const resumeRotation = useCallback(() => setPaused(false), []);
+  const pauseOnFocus = useCallback(() => setPaused(true), []);
+  const resumeOnBlur = useCallback((event: React.FocusEvent<HTMLDivElement>) => {
+    const nextFocused = event.relatedTarget instanceof Node ? event.relatedTarget : null;
+    if (event.currentTarget.contains(nextFocused)) return;
+    setPaused(false);
+  }, []);
 
   return (
     <SectionContainer
@@ -60,10 +103,11 @@ export default function AffirmationCarousel() {
       hint="Mensagens curtas para quando o mundo parece barulhento demais."
     >
       <div
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        onFocus={() => setPaused(true)}
-        onBlur={() => setPaused(false)}
+        ref={carouselRef}
+        onMouseEnter={pauseRotation}
+        onMouseLeave={resumeRotation}
+        onFocus={pauseOnFocus}
+        onBlur={resumeOnBlur}
         className="relative isolate overflow-hidden rounded-[1.5rem] border border-white/10 bg-[rgba(15,10,28,0.78)] p-6 sm:rounded-[2.5rem] sm:p-12 lg:p-16"
         aria-roledescription="carrossel"
         aria-label="Frases acolhedoras"

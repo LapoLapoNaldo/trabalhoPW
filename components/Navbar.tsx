@@ -1,51 +1,82 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { navItems } from "@/components/data";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState<string>("#inicio");
+  const scrolledRef = useRef(false);
+  const activeRef = useRef("#inicio");
 
   useEffect(() => {
+    const sections = navItems
+      .map((item) => ({
+        href: item.href,
+        element: document.querySelector<HTMLElement>(item.href)
+      }))
+      .filter(
+        (section): section is { href: string; element: HTMLElement } =>
+          section.element !== null
+      );
+
     let ticking = false;
     const update = () => {
       ticking = false;
-      setScrolled(window.scrollY > 24);
+
+      const nextScrolled = window.scrollY > 24;
+      if (nextScrolled !== scrolledRef.current) {
+        scrolledRef.current = nextScrolled;
+        setScrolled(nextScrolled);
+      }
+
+      if (sections.length > 0) {
+        const marker = Math.min(window.innerHeight * 0.42, 420);
+        let nextActive = sections[0].href;
+
+        for (const section of sections) {
+          if (section.element.getBoundingClientRect().top <= marker) {
+            nextActive = section.href;
+          } else {
+            break;
+          }
+        }
+
+        if (nextActive !== activeRef.current) {
+          activeRef.current = nextActive;
+          setActive(nextActive);
+        }
+      }
     };
-    const onScroll = () => {
+
+    const requestUpdate = () => {
       if (ticking) return;
       ticking = true;
       window.requestAnimationFrame(update);
     };
+
     update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    window.addEventListener("hashchange", requestUpdate);
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      window.removeEventListener("hashchange", requestUpdate);
+    };
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const sections = navItems
-      .map((item) => document.querySelector(item.href))
-      .filter((value): value is Element => value !== null);
-    if (sections.length === 0) return;
+    if (!open) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible?.target?.id) {
-          setActive(`#${visible.target.id}`);
-        }
-      },
-      { rootMargin: "-40% 0px -50% 0px", threshold: [0.05, 0.2, 0.5] }
-    );
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
 
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, []);
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open]);
 
   return (
     <header

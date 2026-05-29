@@ -3,6 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 import Mascot from "@/components/Mascot";
 
+const HEADLINE_WORDS = ["Você", "não", "precisa", "caber", "para"];
+const HEADLINE_ACCENT = ["pertencer."];
+const MARQUEE_PHRASES = [
+  "Existir com verdade",
+  "Pertencer sem pedir licença",
+  "Cada pronome importa",
+  "Pluralidade é cuidado",
+  "Você não está sole",
+  "Orgulho também é colo"
+];
+
 /**
  * Hero — minimal-cost editorial opening.
  *
@@ -54,9 +65,6 @@ export default function Hero() {
     };
   }, [isDesktop]);
 
-  const headline = ["Você", "não", "precisa", "caber", "para"];
-  const accent = ["pertencer."];
-
   return (
     <section
       id="inicio"
@@ -81,7 +89,7 @@ export default function Hero() {
 
           <h1 className="mt-6 font-display font-light leading-display tracking-editorial text-white text-fluid-display sm:mt-8">
             <span className="block text-pretty">
-              {headline.map((word, idx) => (
+              {HEADLINE_WORDS.map((word, idx) => (
                 <span
                   key={`${word}-${idx}`}
                   className="word-reveal mr-[0.28em]"
@@ -92,13 +100,13 @@ export default function Hero() {
               ))}
             </span>
             <span className="mt-1 block">
-              {accent.map((word, idx) => (
+              {HEADLINE_ACCENT.map((word, idx) => (
                 <span
                   key={`${word}-${idx}`}
                   className="word-reveal italic"
                   style={
                     {
-                      "--word-delay": headline.length + idx
+                      "--word-delay": HEADLINE_WORDS.length + idx
                     } as React.CSSProperties
                   }
                 >
@@ -206,14 +214,7 @@ export default function Hero() {
           <div className="marquee font-display text-sm uppercase tracking-[0.4em] text-white/60">
             {Array.from({ length: 2 }).map((_, group) => (
               <div key={group} className="flex items-center gap-12">
-                {[
-                  "Existir com verdade",
-                  "Pertencer sem pedir licença",
-                  "Cada pronome importa",
-                  "Pluralidade é cuidado",
-                  "Você não está sole",
-                  "Orgulho também é colo"
-                ].map((phrase) => (
+                {MARQUEE_PHRASES.map((phrase) => (
                   <span key={`${group}-${phrase}`} className="flex items-center gap-12">
                     <span className="italic text-white/80">{phrase}</span>
                     <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-pride-yellow" />

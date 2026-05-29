@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { flags, type FlagInfo } from "@/components/data";
 import Modal from "@/components/Modal";
 import SectionContainer from "@/components/SectionContainer";
@@ -26,13 +26,22 @@ function FlagStripes({ flag, rounded = "rounded-2xl" }: { flag: FlagInfo; rounde
   );
 }
 
-function FlagCard({ flag, onOpen, index }: { flag: FlagInfo; onOpen: () => void; index: number }) {
+const FlagCard = memo(function FlagCard({
+  flag,
+  onOpen,
+  index
+}: {
+  flag: FlagInfo;
+  onOpen: (flag: FlagInfo) => void;
+  index: number;
+}) {
   return (
     <button
       type="button"
-      onClick={onOpen}
+      onClick={() => onOpen(flag)}
       aria-label={`Abrir detalhes da bandeira ${flag.name}`}
       className="flag-card card-premium group relative flex flex-col gap-5 p-5 text-left sm:gap-6 sm:p-6"
+      style={{ "--accent": "255,244,48" } as React.CSSProperties}
     >
       {/* Top meta */}
       <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.32em] text-white/45">
@@ -80,10 +89,26 @@ function FlagCard({ flag, onOpen, index }: { flag: FlagInfo; onOpen: () => void;
       </span>
     </button>
   );
-}
+});
+
+const FlagGrid = memo(function FlagGrid({
+  onOpen
+}: {
+  onOpen: (flag: FlagInfo) => void;
+}) {
+  return (
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {flags.map((flag, index) => (
+        <FlagCard key={flag.name} flag={flag} index={index} onOpen={onOpen} />
+      ))}
+    </div>
+  );
+});
 
 export default function FlagGallery() {
   const [selected, setSelected] = useState<FlagInfo | null>(null);
+  const openFlag = useCallback((flag: FlagInfo) => setSelected(flag), []);
+  const closeModal = useCallback(() => setSelected(null), []);
 
   return (
     <SectionContainer
@@ -100,19 +125,10 @@ export default function FlagGallery() {
       description="Cada cor carrega memória, afeto e luta. Coleção curada das bandeiras mais visíveis da comunidade LGBTQIA+."
       className="bg-white/[0.015]"
     >
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {flags.map((flag, index) => (
-          <FlagCard
-            key={flag.name}
-            flag={flag}
-            index={index}
-            onOpen={() => setSelected(flag)}
-          />
-        ))}
-      </div>
+      <FlagGrid onOpen={openFlag} />
 
       {selected ? (
-        <Modal title={`Bandeira ${selected.name}`} onClose={() => setSelected(null)}>
+        <Modal title={`Bandeira ${selected.name}`} onClose={closeModal}>
           <div className="grid gap-7 lg:grid-cols-[1fr_1.1fr] lg:items-start">
             <div>
               <FlagStripes flag={selected} rounded="rounded-3xl" />

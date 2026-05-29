@@ -22,6 +22,8 @@ export default function Modal({ title, children, onClose }: ModalProps) {
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
+
     const previousActive = document.activeElement as HTMLElement | null;
     closeRef.current?.focus();
 
@@ -57,7 +59,7 @@ export default function Modal({ title, children, onClose }: ModalProps) {
       window.removeEventListener("keydown", onKeyDown);
       previousActive?.focus();
     };
-  }, [onClose]);
+  }, [mounted, onClose]);
 
   if (!mounted) return null;
 

@@ -75,11 +75,12 @@ export function InfoCard({
       : size === "wide"
         ? "min-h-[12rem] sm:min-h-[14rem]"
         : "min-h-[14rem] sm:min-h-[18rem]";
+  const accentStyle = { "--accent": tone.rgb } as React.CSSProperties;
 
   return (
     <article
-      className={`card-premium card-glow ${sizeClass} flex flex-col justify-between p-6 sm:p-8`}
-      style={{ "--accent": tone.rgb } as React.CSSProperties}
+      className={`card-premium card-glow group ${sizeClass} flex flex-col justify-between p-6 sm:p-8`}
+      style={accentStyle}
     >
       <header className="flex items-start justify-between gap-4">
         <div
@@ -107,7 +108,10 @@ export function InfoCard({
       {/* Bottom hairline accent */}
       <div className="mt-6 flex items-center justify-between sm:mt-8">
         <span
-          className={`block h-px w-16 bg-gradient-to-r from-transparent ${tone.text} to-transparent opacity-60`}
+          className="block h-px w-16 opacity-70 transition-all duration-500 ease-cinema group-hover:w-24 group-hover:opacity-100"
+          style={{
+            background: `linear-gradient(90deg, transparent, ${tone.ring}, transparent)`
+          }}
         />
         <svg
           width="20"
@@ -138,7 +142,10 @@ type ResourceCardProps = {
 
 export function ResourceCard({ title, body, href, label }: ResourceCardProps) {
   return (
-    <article className="card-premium flex h-full flex-col justify-between p-6 sm:p-8">
+    <article
+      className="card-premium card-glow flex h-full flex-col justify-between p-6 sm:p-8"
+      style={{ "--accent": "255,106,174" } as React.CSSProperties}
+    >
       <div>
         <div className="mb-5 flex items-center gap-3 text-[10px] uppercase tracking-[0.32em] text-white/45 sm:mb-6">
           <span className="h-1.5 w-1.5 rounded-full bg-pride-pink" />

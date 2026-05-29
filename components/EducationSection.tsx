@@ -2,6 +2,12 @@ import { InfoCard } from "@/components/Cards";
 import { educationCards, myths } from "@/components/data";
 import SectionContainer from "@/components/SectionContainer";
 
+const respectfulPhrases = [
+  "Como você prefere ser chamade?",
+  "Posso usar elu/delu?",
+  "Obrigade por me corrigir. Vou usar certo daqui pra frente."
+];
+
 export default function EducationSection() {
   return (
     <SectionContainer
@@ -66,11 +72,7 @@ export default function EducationSection() {
             <em className="italic-display text-pride-lilac">grandes pontes.</em>
           </h3>
           <ul className="mt-7 grid gap-3">
-            {[
-              "Como você prefere ser chamade?",
-              "Posso usar elu/delu?",
-              "Obrigade por me corrigir. Vou usar certo daqui pra frente."
-            ].map((phrase, idx) => (
+            {respectfulPhrases.map((phrase, idx) => (
               <li
                 key={phrase}
                 className="group flex items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition-all duration-500 ease-cinema hover:-translate-y-0.5 hover:border-pride-yellow/40 hover:bg-white/[0.06]"

@@ -26,10 +26,16 @@ export default function AnimatedSection({
     const element = ref.current;
     if (!element) return;
 
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      element.classList.add("is-visible");
+      return;
+    }
+
+    let revealTimer: number | null = null;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          window.setTimeout(() => {
+          revealTimer = window.setTimeout(() => {
             element.classList.add("is-visible");
           }, delay);
           observer.unobserve(element);
@@ -39,7 +45,10 @@ export default function AnimatedSection({
     );
 
     observer.observe(element);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (revealTimer !== null) window.clearTimeout(revealTimer);
+    };
   }, [delay, threshold]);
 
   const Component = as as React.ElementType;
